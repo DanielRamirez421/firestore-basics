@@ -1,6 +1,13 @@
-import "./documentation";
+import { getDoc, getFirestore, updateDoc } from 'firebase/firestore';
+import { app } from './firebase/config';
+
+// import "./documentation";
 
 import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore"; 
+
+const firebaseDB = getFirestore(app);
+
+
 
 const addNewUser = async () => {
   const userOne = {
@@ -10,39 +17,31 @@ const addNewUser = async () => {
     birthday: new Date(),
   };
 
-  const userTwo = {
-    name: "Fernando Ramirez",
-    email: "fernando@gmail.com",
-    age: 30,
-    birthday: new Date(),
-  };
   // Documento = fila en SQL
   // Coleccion = tabla en SQL
   // addDoc() = INSERT INTO
 
-  // Agregar un nuevo documento a la coleccion "users"
-  // Agregar un nuevo reigistro a la tabla "users"
+  // Se inserta Doc con Id aleatorio
+  const collectionRef = collection(firebaseDB, "users");
+  // await addDoc(collectionRef, userOne).then((docRef) => console.log(docRef.id));
 
-  /* Existen dos formas de guardar registros en un documento
-  1. Dejando que firebase genere un Id de forma automática
-  2. Asignando el id automáticamente pode medio de una ruta*/
-
-  // 1. Dejando que firebase genere un Id de forma automática
-  // const docRef = await addDoc(collection(firebaseDB, "users"), userOne);
-  // console.log("Document written with ID: ", docRef.id, "and path: ", docRef.path);
-  // console.log(docRef);
-
-  // 2. Asignando el id automáticamente pode medio de una ruta
-  // El atributo merge permite actualizar un atributo de un documento en caso de que no exista
-  // const userDocReference = doc( firebaseDB, "users", "1" );
-  // await setDoc(userDocReference, userTwo, { merge: true });
-
-  /*Para traer todos los doscumentos de una colección se usa getDocs, 
-  éste trae todos los registros además de métodos para gestionarlos dentro de su prototype*/
+  // Se realiza uptdate  de documento en coleccion users con id especifico
+  const docRef = doc(firebaseDB, "users", "1xqzf0dGfEPBhhghSTX2");
+  // await updateDoc(docRef, { ...userOne, age: 29 });
 
   // Obtener todos los documentos de una coleccion
-  // const querySnapshot = await getDocs(collection(firebaseDB, "users"));
+  const querySnapshot = await getDocs(collectionRef);
   // querySnapshot.forEach((doc) => console.log(`${doc.id} => ${JSON.stringify(doc.data())}`));
-};
+
+  // Obtener un documento especifico
+  const docSnapshot = await getDoc(docRef);
+  // console.log(docSnapshot.data());
+
+  // Obtener todos los documentos
+  const allDocs = await getDocs(collectionRef);
+  let docs: any[] = []; 
+  allDocs.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
+  console.log(docs);
+}
 
 addNewUser();
