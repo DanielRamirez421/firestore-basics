@@ -63,7 +63,7 @@ const childDocRef      = doc(specialOfTheDay, "orderHistory/2021-03-14");
       collection(firebaseDB, "orders"),
       where("customer", "==", "Daniel Ramirez"),
       orderBy("price", "desc"),
-      limit(3)
+      limit(3),
     );
     // Get the query snapshot
     const querySnapshot = await getDocs(customerOrdersQuery); // https://youtu.be/BjtxPj6jRM8?t=540

@@ -1,4 +1,4 @@
-import { getDoc, getFirestore, updateDoc } from 'firebase/firestore';
+import { getDoc, getFirestore, limit, orderBy, query, startAfter, updateDoc } from 'firebase/firestore';
 import { app } from './firebase/config';
 
 // import "./documentation";
@@ -41,7 +41,33 @@ const addNewUser = async () => {
   const allDocs = await getDocs(collectionRef);
   let docs: any[] = []; 
   allDocs.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
-  console.log(docs);
+  console.warn(docs.length);
+
+
+  // adding pagination
+  const prevBtn = document.createElement("button");
+  prevBtn.innerText = "Prev Page";
+  document.body.append(prevBtn);
+
+  const btnNext = document.createElement("button");
+  btnNext.innerText = "Next Page";
+  document.body.append(btnNext);
+
+  let lastDoc: any = null;
+
+  btnNext.addEventListener("click", async () => {
+    const usersQuery = query(
+      collectionRef,
+      orderBy("name",),
+      startAfter(lastDoc),
+      limit(8),
+    );
+    const querySnapshot = await getDocs(usersQuery);
+    console.log(querySnapshot.forEach((doc) => console.log(doc.data())));
+    lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1] || null;
+  });
+
+  btnNext.click();
 }
 
 addNewUser();
